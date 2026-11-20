@@ -1,0 +1,382 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Student API Interface</title>
+    <style>
+        :root {
+            --navy: #111827;
+            --blue: #2563eb;
+            --blue-dark: #1d4ed8;
+            --ink: #1f2937;
+            --muted: #6b7280;
+            --line: #e5e7eb;
+            --surface: #ffffff;
+            --background: #f3f6fb;
+        }
+
+        * { box-sizing: border-box; }
+
+        body {
+            margin: 0;
+            min-height: 100vh;
+            font-family: "Segoe UI", Arial, sans-serif;
+            color: var(--ink);
+            background:
+                radial-gradient(circle at top left, rgba(37, 99, 235, 0.10), transparent 28rem),
+                var(--background);
+        }
+
+        .shell {
+            max-width: 980px;
+            margin: 0 auto;
+            padding: 48px 24px 64px;
+        }
+
+        .header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 24px;
+            margin-bottom: 28px;
+        }
+
+        .eyebrow {
+            margin: 0 0 6px;
+            color: var(--blue);
+            font-size: 0.78rem;
+            font-weight: 800;
+            letter-spacing: 0.12em;
+            text-transform: uppercase;
+        }
+
+        h1 {
+            margin: 0;
+            color: var(--navy);
+            font-size: clamp(2rem, 5vw, 3.2rem);
+            line-height: 1.05;
+        }
+
+        .badge {
+            flex: none;
+            border: 1px solid #bfdbfe;
+            border-radius: 999px;
+            padding: 8px 12px;
+            color: var(--blue-dark);
+            background: #eff6ff;
+            font-size: 0.86rem;
+            font-weight: 700;
+        }
+
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+            gap: 20px;
+        }
+
+        .card {
+            border: 1px solid var(--line);
+            border-radius: 18px;
+            padding: 24px;
+            background: rgba(255, 255, 255, 0.94);
+            box-shadow: 0 12px 34px rgba(15, 23, 42, 0.06);
+        }
+
+        .card-wide { grid-column: 1 / -1; }
+
+        .card h2 {
+            margin: 0 0 18px;
+            color: var(--navy);
+            font-size: 1.1rem;
+        }
+
+        button {
+            border: 0;
+            border-radius: 10px;
+            padding: 11px 16px;
+            color: white;
+            background: var(--blue);
+            font-weight: 700;
+            cursor: pointer;
+            transition: 150ms ease;
+        }
+
+        button:hover {
+            background: var(--blue-dark);
+            transform: translateY(-1px);
+        }
+
+        button:focus-visible, input:focus-visible, select:focus-visible {
+            outline: 3px solid rgba(37, 99, 235, 0.24);
+            outline-offset: 2px;
+        }
+
+        input, select {
+            width: min(360px, 100%);
+            border: 1px solid #d1d5db;
+            border-radius: 10px;
+            padding: 11px 12px;
+            color: var(--ink);
+            background: white;
+        }
+
+        .greeting-row {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        #greeting {
+            min-height: 24px;
+            margin: 14px 0 0;
+            color: var(--blue-dark);
+            font-weight: 700;
+        }
+
+        .profile-grid {
+            display: grid;
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+            gap: 12px;
+        }
+
+        .data-row {
+            border: 1px solid var(--line);
+            border-radius: 12px;
+            padding: 14px;
+            background: #fafbfc;
+        }
+
+        .data-label {
+            display: block;
+            margin-bottom: 4px;
+            color: var(--muted);
+            font-size: 0.72rem;
+            font-weight: 800;
+            letter-spacing: 0.08em;
+            text-transform: uppercase;
+        }
+
+        .data-value {
+            color: var(--navy);
+            font-size: 1rem;
+            font-weight: 800;
+        }
+
+        .loading {
+            color: var(--muted);
+        }
+
+        .student-list {
+            display: grid;
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+            gap: 12px;
+            margin-top: 16px;
+        }
+
+        .student-record h3 {
+            margin: 0 0 8px;
+            color: var(--navy);
+            font-size: 1rem;
+        }
+
+        .student-record p {
+            margin: 0;
+            color: var(--muted);
+            line-height: 1.5;
+        }
+
+        .filter-row {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        @media (max-width: 720px) {
+            .shell { padding: 28px 16px 40px; }
+            .header { align-items: flex-start; flex-direction: column; }
+            .grid { grid-template-columns: 1fr; }
+            .card-wide { grid-column: auto; }
+            .profile-grid { grid-template-columns: 1fr; }
+            .greeting-row { align-items: stretch; flex-direction: column; }
+            .student-list { grid-template-columns: 1fr; }
+            .filter-row { align-items: stretch; flex-direction: column; }
+        }
+    </style>
+</head>
+<body>
+    <main class="shell">
+        <header class="header">
+            <div>
+                <p class="eyebrow">Student API Interface</p>
+                <h1>Grant David Padilla</h1>
+            </div>
+            <span class="badge">ID 24-00170</span>
+        </header>
+
+        <div class="grid">
+            <section class="card card-wide">
+                <h2>Student Information</h2>
+                <button type="button" onclick="loadStudent()">Load Student Information</button>
+                <div id="result" class="profile-grid" style="margin-top:16px"></div>
+            </section>
+
+            <section class="card">
+                <h2>Greeting API</h2>
+                <div class="greeting-row">
+                    <input type="text" id="nameInput" placeholder="Enter your first name">
+                    <button type="button" onclick="sayHello()">Say Hello</button>
+                </div>
+                <p id="greeting"></p>
+            </section>
+
+            <section class="card">
+                <h2>Custom API: Academic Profile</h2>
+                <button type="button" onclick="loadAcademic()">Load Academic Profile</button>
+                <div id="academicResult" class="profile-grid" style="margin-top:16px"></div>
+            </section>
+
+            <section class="card card-wide">
+                <h2>Students from Database</h2>
+                <button type="button" onclick="loadStudents()">Load Students</button>
+                <div id="studentList" class="student-list" aria-live="polite"></div>
+            </section>
+
+            <section class="card card-wide">
+                <h2>Custom Database API: Students by Section</h2>
+                <div class="filter-row">
+                    <label for="sectionFilter">Choose a section:</label>
+                    <select id="sectionFilter">
+                        <option value="A">Section A</option>
+                        <option value="B">Section B</option>
+                        <option value="C">Section C</option>
+                    </select>
+                    <button type="button" onclick="loadStudentsBySection()">Find Students</button>
+                </div>
+                <div id="sectionResults" class="student-list" aria-live="polite"></div>
+            </section>
+        </div>
+    </main>
+
+    <script>
+        function renderProfile(target, entries) {
+            target.replaceChildren();
+            entries.forEach(([label, value]) => {
+                const row = document.createElement('div');
+                row.className = 'data-row';
+                const dataLabel = document.createElement('span');
+                dataLabel.className = 'data-label';
+                dataLabel.textContent = label;
+                const dataValue = document.createElement('span');
+                dataValue.className = 'data-value';
+                dataValue.textContent = value;
+                row.append(dataLabel, dataValue);
+                target.appendChild(row);
+            });
+        }
+
+        function renderStudentRecords(target, students) {
+            target.replaceChildren();
+            if (students.length === 0) {
+                target.textContent = 'No student records found.';
+                return;
+            }
+
+            students.forEach(student => {
+                const record = document.createElement('article');
+                record.className = 'data-row student-record';
+                const heading = document.createElement('h3');
+                heading.textContent = student.student_id + ' - ' + student.name;
+                const details = document.createElement('p');
+                details.textContent = student.program + ' | Year ' + student.year +
+                    ' | Section ' + student.section + ' | Database ID ' + student.id;
+                record.append(heading, details);
+                target.appendChild(record);
+            });
+        }
+
+        function loadStudent() {
+            const result = document.getElementById('result');
+            result.innerHTML = '<p class="loading">Loading student details...</p>';
+            fetch('/student')
+                .then(response => response.json())
+                .then(data => {
+                    renderProfile(result, [
+                        ['Student ID', data.student_id],
+                        ['Name', data.name],
+                        ['Program', data.program],
+                        ['Year Level', data.year],
+                        ['Section', data.section]
+                    ]);
+                })
+                .catch(error => {
+                    result.innerHTML = '<p>Unable to retrieve data.</p>';
+                });
+        }
+
+        function sayHello() {
+            const name = document.getElementById('nameInput').value.trim();
+            fetch('/hello?name=' + encodeURIComponent(name))
+                .then(response => response.json())
+                .then(data => {
+                    document.getElementById('greeting').innerText = data.message;
+                })
+                .catch(error => {
+                    document.getElementById('greeting').innerText = 'Unable to retrieve greeting.';
+                });
+        }
+
+        function loadAcademic() {
+            const result = document.getElementById('academicResult');
+            result.innerHTML = '<p class="loading">Loading academic profile...</p>';
+            fetch('/academic')
+                .then(response => response.json())
+                .then(data => {
+                    renderProfile(result, [
+                        ['Student ID', data.student_id],
+                        ['Name', data.name],
+                        ['Program', data.program],
+                        ['Year Level', data.year],
+                        ['Section', data.section]
+                    ]);
+                })
+                .catch(error => {
+                    result.innerHTML = '<p>Unable to retrieve academic profile.</p>';
+                });
+        }
+
+        function loadStudents() {
+            const studentList = document.getElementById('studentList');
+            studentList.textContent = 'Loading student records...';
+            fetch('/students')
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error('Unable to retrieve student records.');
+                    }
+                    return response.json();
+                })
+                .then(students => renderStudentRecords(studentList, students))
+                .catch(error => {
+                    studentList.textContent = 'Unable to retrieve student records.';
+                });
+        }
+
+        function loadStudentsBySection() {
+            const section = document.getElementById('sectionFilter').value;
+            const results = document.getElementById('sectionResults');
+            results.textContent = 'Loading section records...';
+            fetch('/students/section/' + encodeURIComponent(section))
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error('Unable to retrieve section records.');
+                    }
+                    return response.json();
+                })
+                .then(students => renderStudentRecords(results, students))
+                .catch(error => {
+                    results.textContent = 'Unable to retrieve section records.';
+                });
+        }
+    </script>
+</body>
+</html>
